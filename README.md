@@ -17,10 +17,10 @@
 
 ## Included Files
 - [makefile](https://github.com/CSE-5462-Spring-2021/assignment3-conner-n-ben/blob/master/makefile)
-- Player 1 (server) Design Document - [Design_P1.md](https://github.com/CSE-5462-Spring-2021/assignment3-conner-n-ben/blob/main/Design_P1.md)
-- TicTacToe Player 1 Source Code - [tictactoeP1.c](https://github.com/CSE-5462-Spring-2021/assignment3-conner-n-ben/blob/main/tictactoeP1.c)
-- Player 2 (client) Design Document - [Design_P2.md](https://github.com/CSE-5462-Spring-2021/assignment3-conner-n-ben/blob/main/Design_P2.md)
-- TicTacToe Player 2 Source Code - [tictactoeP2.c](https://github.com/CSE-5462-Spring-2021/assignment3-conner-n-ben/blob/main/tictactoeP2.c)
+- Player 1 (server) Design Document - [Design_P1.md](https://github.com/CSE-5462-Spring-2021/assignment3-conner-n-ben/blob/master/Design_P1.md)
+- TicTacToe Player 1 Source Code - [tictactoeP1.c](https://github.com/CSE-5462-Spring-2021/assignment3-conner-n-ben/blob/master/tictactoeP1.c)
+- Player 2 (client) Design Document - [Design_P2.md](https://github.com/CSE-5462-Spring-2021/assignment3-conner-n-ben/blob/master/Design_P2.md)
+- TicTacToe Player 2 Source Code - [tictactoeP2.c](https://github.com/CSE-5462-Spring-2021/assignment3-conner-n-ben/blob/master/tictactoeP2.c)
 
 ## TicTacToe Player 1
 > By: Conner Graham
