@@ -32,20 +32,20 @@ int main(int argc, char *argv[])
 {
     char board[ROWS][COLUMNS];
    int portNumber, socketDesc;
-	unsigned long serverNetAddr;
-	struct sockaddr_in serverAddr;
-	int rc=0;
-	/* If arg count correct, extract arguments to their respective variables */
-	if (argc != NUM_ARGS) handle_init_error("argc: Invalid number of command line arguments", 0);
-	extractArgs(argv, &serverNetAddr, &portNumber);
-	/* Attempt to open the local file to transfer */
+    unsigned long serverNetAddr;
+    struct sockaddr_in serverAddr;
+    int rc=0;
+    /* If arg count correct, extract arguments to their respective variables */
+    if (argc != NUM_ARGS) handle_init_error("argc: Invalid number of command line arguments", 0);
+    extractArgs(argv, &serverNetAddr, &portNumber);
+    /* Attempt to open the local file to transfer */
 
-	/* Create server socket from user provided data */
-	socketDesc = create_endpoint(&serverAddr, serverNetAddr, portNumber);
-	/* Establish connection to server and transfer file */
-	if (connect(socketDesc, (struct sockaddr *)&serverAddr, sizeof(struct sockaddr_in)) != -1) {
-		printf("[+]Connected to server.\n");
-		printf("Connected to IP address %s on port %hu\n", argv[1], htons(portNumber));
+    /* Create server socket from user provided data */
+    socketDesc = create_endpoint(&serverAddr, serverNetAddr, portNumber);
+    /* Establish connection to server and transfer file */
+    if (connect(socketDesc, (struct sockaddr *)&serverAddr, sizeof(struct sockaddr_in)) != -1) {
+        printf("[+]Connected to server.\n");
+        printf("Connected to IP address %s on port %hu\n", argv[1], htons(portNumber));
     }
     rc = initSharedState(board); // Initialize the 'game' board
     rc = tictactoe(board,socketDesc);       // call the 'game'
@@ -69,16 +69,22 @@ int tictactoe(char board[ROWS][COLUMNS], int sd)
         if(player==2){
         printf("Player %d, enter a number:  ", player); // print out player so you can pass game
         scanf("%c", &pick);                           //using scanf to get the choice
-        send(sd, &pick, sizeof(char), MSG_NOSIGNAL);
+        getchar();
          } else {
-                printf("GOT HERE\n");
+             printf("Waiting for square selection from server..\n");
                 rc=read(sd,&pick,1);
-                if(rc>0){
-                    printf("GOT STUFF\n");
+                if(rc<0){
+                   printf("Connection lost!\n\n");
+                   printf("Closing connection!\n");
+                   exit(1);
                 }
          }
           choice=pick-'0';
+          if(player==1){
           printf("Server picked: %d\n",choice);
+          } else {
+              printf("Client picked: %d\n",choice);
+          }
         mark = (player == 1) ? 'X' : 'O'; //depending on who the player is, either us x or o
         /******************************************************************/
         /** little math here. you know the squares are numbered 1-9, but  */
@@ -91,11 +97,25 @@ int tictactoe(char board[ROWS][COLUMNS], int sd)
         /* first check to see if the row/column chosen is has a digit in it, if it */
         /* square 8 has and '8' then it is a valid choice                          */
 
-        if (board[row][column] == (choice + '0'))
+        if (board[row][column] == (choice + '0')){
             board[row][column] = mark;
+            if(player==2){
+            send(sd, &pick, sizeof(char), MSG_NOSIGNAL);
+            }
+        }
         else
         {
-            printf("Invalid move ");
+            printf("Invalid move\n");
+            if(player==1){
+                printf("The spot picked is not empty\n");
+                printf("Closing the game & connection\n");
+                exit(1);
+            }
+            else if(player==2){
+                 printf("The spot picked is not empty\n");
+                 printf("Pick a new number\n");
+                 continue;
+            }
             player--;
             getchar();
         }
@@ -103,7 +123,7 @@ int tictactoe(char board[ROWS][COLUMNS], int sd)
         i = checkwin(board);
 
         player++;
-        bzero(pick,1);
+        //bzero(pick,1);
     } while (i == -1); // -1 means no one won
 
     /* print out the board again */
@@ -199,31 +219,31 @@ int initSharedState(char board[ROWS][COLUMNS])
 /**
  * @brief Prints the provided error message and corresponding errno message (if present) and
  * terminates the process if asked to do so.
- * 
+ *
  * @param msg The error description message to display.
  * @param errnum This is the error number, usually errno.
  * @param terminate Whether or not the process should be terminated.
  */
 void print_error(const char *msg, int errnum, int terminate) {
-	/* Check for valid error code and generate error message */
-	if (errnum) {
-		printf("ERROR: %s: %s\n", msg, strerror(errnum));
-	} else {
-		printf("ERROR: %s\n", msg);
-	}
-	/* Exits process if it should be terminated */
-	if (terminate) exit(EXIT_FAILURE);
+    /* Check for valid error code and generate error message */
+    if (errnum) {
+        printf("ERROR: %s: %s\n", msg, strerror(errnum));
+    } else {
+        printf("ERROR: %s\n", msg);
+    }
+    /* Exits process if it should be terminated */
+    if (terminate) exit(EXIT_FAILURE);
 }
 void handle_init_error(const char *msg, int errnum) {
-	print_error(msg, errnum, 0);
-	printf("Usage is: ftpc <remote-IP> <remote-port> <local-file-to-transfer>\n");
-	/* Exits the process signaling unsuccessful termination */
-	exit(EXIT_FAILURE);
+    print_error(msg, errnum, 0);
+    printf("Usage is: ftpc <remote-IP> <remote-port> <local-file-to-transfer>\n");
+    /* Exits the process signaling unsuccessful termination */
+    exit(EXIT_FAILURE);
 }
 /**
  * @brief Extracts the user provided arguments to their respective local variables and performs
  * validation on their formatting. If any errors are found, the function terminates the process.
- * 
+ *
  * @param argv Pointer to the first element of an array of argc + 1 pointers, of which the
  * last one is null and the previous ones, if any, point to strings that represent the
  * arguments passed to the program from the host environment. If argv[0] is not a null
@@ -234,37 +254,38 @@ void handle_init_error(const char *msg, int errnum) {
  * @param filename The filename of the local file to transfer
  */
 void extractArgs(char *argv[], unsigned long *address, int *port) {
-	/* Extract and validate remote IP address */
-	*address = inet_addr(argv[1]);
-	if (*address == INADDR_NONE || *address == INADDR_ANY) handle_init_error("remote-IP: Invalid server address", 0);
-	/* Extract and validate remote port number */
-	*port = strtol(argv[2], NULL, 10);
-	if (*port < 1 || *port != (u_int16_t)(*port)) handle_init_error("remote-port: Invalid port number", 0);
-	/* Extract and validate the filename of the file to transfer */
-	
+    /* Extract and validate remote IP address */
+    *address = inet_addr(argv[1]);
+    if (*address == INADDR_NONE || *address == INADDR_ANY) handle_init_error("remote-IP: Invalid server address", 0);
+    /* Extract and validate remote port number */
+    *port = strtol(argv[2], NULL, 10);
+    if (*port < 1 || *port != (u_int16_t)(*port)) handle_init_error("remote-port: Invalid port number", 0);
+    /* Extract and validate the filename of the file to transfer */
+    
 }
 
 /**
  * @brief Creates the comminication endpoint with the provided IP address and port number. If any
  * errors are found, the function terminates the process.
- * 
+ *
  * @param socketAddr The socket address structure creates for the comminication endpoint.
  * @param address The IP address for the socket address structure.
  * @param port The port number for the socket address structure.
  * @return The socket descriptor of the created comminication endpoint.
  */
 int create_endpoint(struct sockaddr_in *socketAddr, unsigned long address, int port) {
-	int sd;
-	/* Create socket */
-	if ((sd = socket(AF_INET, SOCK_STREAM, 0)) != -1) {
-		socketAddr->sin_family = AF_INET;
-		/* Assign IP address to socket */
-		socketAddr->sin_addr.s_addr = address;
-		/* Assign port number to socket */
-		socketAddr->sin_port = htons(port);
-		printf("[+]Server socket created successfully.\n");
-	} else {
-		print_error("create_endpoint", errno, 1);
-	}
-	return sd;
+    int sd;
+    /* Create socket */
+    if ((sd = socket(AF_INET, SOCK_STREAM, 0)) != -1) {
+        socketAddr->sin_family = AF_INET;
+        /* Assign IP address to socket */
+        socketAddr->sin_addr.s_addr = address;
+        /* Assign port number to socket */
+        socketAddr->sin_port = htons(port);
+        printf("[+]Server socket created successfully.\n");
+    } else {
+        print_error("create_endpoint", errno, 1);
+    }
+    return sd;
 }
+
