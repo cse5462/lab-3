@@ -13,7 +13,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <errno.h>
-/* #define section, for now we will define the number of rows and columns */
+/* Define the number of rows and columns */
 #define ROWS 3
 #define COLUMNS 3
 /* The number of command line arguments. */
@@ -78,7 +78,7 @@ int tictactoe(char board[ROWS][COLUMNS], int sd)
     int i, choice, rc; // used for keeping track of choice user makes
     int row, column;
     char mark, pick; // either an 'x' or an 'o'
-
+    int input;
     /* loop, first print the board, then ask player 'n' to make a move */
 
     do
@@ -88,8 +88,14 @@ int tictactoe(char board[ROWS][COLUMNS], int sd)
         if (player == 2)
         {
             printf("Player %d, enter a number:  ", player); // player 2 picks a spot
-            scanf("%c", &pick);                             //using scanf to get the choice
-            getchar();
+            scanf("%d", &input);                             //using scanf to get the choice
+            while (input < 1 || input > 9)         //makes sure the input is between 1-9
+            {
+                printf("Invalid input choose a number between 1-9.\n");
+                printf("Player %d, enter a number:  ", player); // player 2 picks a spot
+                scanf("%d", &input);
+            }
+            pick=input+ '0';
         }
         else
         {
@@ -103,8 +109,8 @@ int tictactoe(char board[ROWS][COLUMNS], int sd)
                 exit(1);
             }
         }
-        choice = pick - '0';
-        if (player == 1)
+        choice = pick - '0';   // converts to a int
+        if (player == 1)      // prints choices
         {
             printf("Player 1 picked: %d\n", choice);
         }
@@ -155,7 +161,7 @@ int tictactoe(char board[ROWS][COLUMNS], int sd)
         i = checkwin(board);
 
         player++;
-        //bzero(pick,1);
+       // memset(pick, 0, 1);
     } while (i == -1); // -1 means no one won
 
     /* print out the board again */
@@ -248,5 +254,3 @@ int initSharedState(char board[ROWS][COLUMNS])
 
     return 0;
 }
-
-
