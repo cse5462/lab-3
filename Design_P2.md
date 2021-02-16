@@ -10,7 +10,11 @@
 
 ## Environment Constants
 ```C#
-TODO
+/* Define the number of rows and columns */
+#define ROWS 3 
+#define COLUMNS 3
+/* The number of command line arguments. */
+#define NUM_ARGS 3
 ```
 
 ## High-Level Architecture
