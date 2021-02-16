@@ -17,7 +17,13 @@ COLUMNS = 3       // number of columns for the TicIacToe board
 ```
 
 ## High-Level Architecture
-TODO
+At a high level, the server application attempts to validate and extract the arguments passed
+to the application. It then attempts to create and bind the server endpoint. If everything was
+successful, it then starts listening for clients and waits to connect to another player. If
+another player connects, the server initializes the game board and begins the TicTacToe game.
+After the game is over, the server closes the connection to the other player. If an error occurs
+before the connection is established, the program terminates and prints appropriate error
+messages, otherwise an error message is printed and the connection is terminated.
 ```C
 int main(int argc, char *argv[]) {
     TODO
@@ -26,7 +32,47 @@ int main(int argc, char *argv[]) {
 ```
 
 ## Low-Level Architecture
-TODO
+Extracts the user provided arguments to their respective local variables and performs
+validation on their formatting. If any errors are found, the function terminates the process.
 ```C
-TODO
+void extractArgs(params...) {
+    /* extract and validate remote port number */
+    if (!valid) exit(EXIT_FAILURE);
+}
 ```
+Creates the comminication endpoint with the provided IP address and port number. If any
+errors are found, the function terminates the process.
+```C
+int create_endpoint(params...) {
+    /* attempt to create socket */
+    if (created) {
+        /* initialize socket with params from user */
+    } else {
+        exit(EXIT_FAILURE);
+    }
+    /* attempt to bind socket to address */
+    if (!bind) {
+        exit(EXIT_FAILURE);
+    }
+    return socket-descriptor;
+}
+```
+TODO Note: This function was created by Dr. Ogle (not myself), but I made significant changes to it's
+structure so I have included it in my design.
+```C
+void tictactoe(params...) {
+    TODO
+}
+```
+- TODO
+    ```C
+    int get_player_choice(params...) {
+        TODO
+    }
+    ```
+- TODO
+    ```C
+    int validate_choice(params...) {
+        TODO
+    }
+    ```
