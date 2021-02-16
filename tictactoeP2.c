@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     if (argc != 3)
     {
         printf("Wrong number of command line arguments");
-        printf("Input is as follows: ftps <port-num>");
+        printf("Input is as follows: tictactoeP2 <ip-address> <port-num>");
         exit(1);
     }
     // create the socket
