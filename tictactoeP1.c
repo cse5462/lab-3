@@ -153,7 +153,7 @@ void extract_args(char *argv[], int *port) {
 }
 
 /**
- * @brief TODO
+ * @brief Prints 
  * 
  * @param serverAddr The socket address structure for the server comminication endpoint.
  */
@@ -209,7 +209,7 @@ int create_endpoint(struct sockaddr_in *socketAddr, unsigned long address, int p
 }
 
 /**
- * @brief NOTE
+ * @brief Initializes the starting state of the game board that both players start with.
  * 
  * @param board The array representing the current state of the game board.
  */
@@ -225,10 +225,11 @@ void init_shared_state(char board[ROWS][COLUMNS]) {
 }
 
 /**
- * @brief NOTE
+ * @brief Determines if someone has won the game yet or not.
  * 
  * @param board The array representing the current state of the game board.
- * @return TODO 
+ * @return The value 1 if a player has won the game, 0 it the game was a draw, and -1 if the
+ * game is still going on. 
  */
 int check_win(char board[ROWS][COLUMNS]) {
     /**************************************************************************/
@@ -261,7 +262,7 @@ int check_win(char board[ROWS][COLUMNS]) {
 }
 
 /**
- * @brief NOTE
+ * @brief Prints out the current state of the game board nicely formatted.
  * 
  * @param board The array representing the current state of the game board.
  */
@@ -285,32 +286,35 @@ void print_board(char board[ROWS][COLUMNS]) {
 }
 
 /**
- * @brief TODO
+ * @brief Gets Player 1's next move.
  * 
- * @return TODO 
+ * @return The integer for the square that Player 1 would like to move to. 
  */
 int get_p1_choice() {
     int pick = 0;
     char input[25];
     printf("Player 1, enter a number:  ");
+    /* Read line of user input */
     fgets(input, sizeof(input), stdin);
+    /* Look for integer in input for player's move */
     sscanf(input, "%d", &pick);
     return pick;
 }
 
 /**
- * @brief TODO
+ * @brief Gets Player 2's next move.
  * 
  * @param sd The socket descriptor of the connected player's comminication endpoint.
- * @return TODO 
+ * @return The integer for the square that Player 2 would like to move to. 
  */
 int get_p2_choice(int sd) {
     int rv;
     char pick = '0';
     printf("Waiting for Player 2 to make a move...\n");
+    /* Get move from remote player */
     if ((rv = recv(sd, &pick, sizeof(char), 0)) < 0) {
         print_error("get_p2_choice", errno, 0);
-    } else if (rv == 0) {
+    } else if (rv == 0) {   // the remote player has terminated the connection
         print_error("Player 2 has left the game", errno, 0);
     } else {
         printf("Player 2 chose:  %c\n", pick);
@@ -319,11 +323,12 @@ int get_p2_choice(int sd) {
 }
 
 /**
- * @brief TODO
+ * @brief Determines whether a given move is legal (i.e. number 1-9) and valid (i.e. hasn't
+ * already been played) for the current game.
  * 
  * @param choice The player move to be validated.
  * @param board The array representing the current state of the game board.
- * @return TODO 
+ * @return True if the given move if valid based on the current board, false otherwise. 
  */
 int validate_choice(int choice, char board[ROWS][COLUMNS]) {
     int row, column;
@@ -344,12 +349,14 @@ int validate_choice(int choice, char board[ROWS][COLUMNS]) {
 }
 
 /**
- * @brief TODO
+ * @brief Gets the choice from either Player 1 or 2. If the choice came from Player 1,
+ * it also send this choice to the other player.
  * 
  * @param sd The socket descriptor of the connected player's comminication endpoint.
  * @param board The array representing the current state of the game board.
  * @param player The value indicating which player's turn it is.
- * @return TODO 
+ * @return The valid choice received from either Player 1 or 2, or -1 if an invalid
+ * move was recieved from Player 2.
  */
 int get_player_choice(int sd, char board[ROWS][COLUMNS], int player) {
     /* Get the player's move */
@@ -374,7 +381,8 @@ int get_player_choice(int sd, char board[ROWS][COLUMNS], int player) {
 }
 
 /**
- * @brief NOTE
+ * @brief Plays a simple game of TicTacToe with a remoye player that ends when either someone wins,
+ * there is a draw, or the remote player leaves the game.
  * 
  * @param sd The socket descriptor of the connected player's comminication endpoint.
  * @param board The array representing the current state of the game board.
