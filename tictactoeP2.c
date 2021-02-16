@@ -13,6 +13,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <errno.h>
+#include <ctype.h>
 /* Define the number of rows and columns */
 #define ROWS 3
 #define COLUMNS 3
@@ -74,8 +75,8 @@ int main(int argc, char *argv[])
 int tictactoe(char board[ROWS][COLUMNS], int sd)
 {
     /* this is the meat of the game, you'll look here for how to change it up */
-    int player = 1;    // keep track of whose turn it is
-    int i, choice, rc; // used for keeping track of choice user makes
+    int player = 1; // keep track of whose turn it is
+    int i, rc;      // used for keeping track of choice user makes
     int row, column;
     char mark, pick; // either an 'x' or an 'o'
     int input;
@@ -83,34 +84,38 @@ int tictactoe(char board[ROWS][COLUMNS], int sd)
 
     do
     {
+        int choice;
         print_board(board);            // call function to print the board on the screen
         player = (player % 2) ? 1 : 2; // Mod math to figure out who the player is
         if (player == 2)
         {
             printf("Player %d, enter a number:  ", player); // player 2 picks a spot
-            scanf("%d", &input);                             //using scanf to get the choice
-            while (input < 1 || input > 9)         //makes sure the input is between 1-9
+            scanf("%d", &input);    //using scanf to get the choice
+            while(getchar()!='\n');
+            while (input < 1 || input > 9)                  //makes sure the input is between 1-9
             {
                 printf("Invalid input choose a number between 1-9.\n");
                 printf("Player %d, enter a number:  ", player); // player 2 picks a spot
+                
                 scanf("%d", &input);
+                while(getchar()!='\n');
             }
-            pick=input+ '0';
+            pick = input + '0';
         }
         else
         {
             printf("Waiting for square selection from player 1..\n"); // gets chosen spot from player 1
             rc = read(sd, &pick, 1);
             // checks to see if the connection was cut mid stream
-            if (rc < 0)
+            if (rc <= 0)
             {
-                printf("Connection lost!\n\n");
+                printf("Connection lost!\n");
                 printf("Closing connection!\n");
                 exit(1);
             }
         }
-        choice = pick - '0';   // converts to a int
-        if (player == 1)      // prints choices
+        choice = pick - '0'; // converts to a int
+        if (player == 1)     // prints choices
         {
             printf("Player 1 picked: %d\n", choice);
         }
@@ -136,7 +141,13 @@ int tictactoe(char board[ROWS][COLUMNS], int sd)
             // sends player 2 chioce if it is valid on the board
             if (player == 2)
             {
-                send(sd, &pick, sizeof(char), MSG_NOSIGNAL);
+                if (send(sd, &pick, sizeof(char), MSG_NOSIGNAL) <= 0)
+                {
+                    printf("Connection lost!\n");
+                    printf("Closing connection!\n");
+                    printf("Bye\n");
+                    exit(1);
+                }
             }
         }
         else
@@ -161,7 +172,8 @@ int tictactoe(char board[ROWS][COLUMNS], int sd)
         i = checkwin(board);
 
         player++;
-       // memset(pick, 0, 1);
+        // memset(pick, 0, 1);
+
     } while (i == -1); // -1 means no one won
 
     /* print out the board again */
