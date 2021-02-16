@@ -10,10 +10,10 @@
 
 ## Environment Constants
 ```C#
-#define NUM_ARGS 2      // number of command line arguments
-#define BACKLOG_MAX 5   // max length for queue of pending connections
-#define ROWS 3          // number of rows for the TicIacToe board
-#define COLUMNS 3       // number of columns for the TicIacToe board
+NUM_ARGS = 2      // number of command line arguments
+BACKLOG_MAX = 5   // max length for queue of pending connections
+ROWS = 3          // number of rows for the TicIacToe board
+COLUMNS = 3       // number of columns for the TicIacToe board
 ```
 
 ## High-Level Architecture
