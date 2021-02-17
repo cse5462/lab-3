@@ -21,14 +21,25 @@
 - TicTacToe Player 1 Source Code - [tictactoeP1.c](https://github.com/CSE-5462-Spring-2021/assignment3-conner-n-ben/blob/master/tictactoeP1.c)
 - Player 2 (client) Design Document - [Design_P2.md](https://github.com/CSE-5462-Spring-2021/assignment3-conner-n-ben/blob/master/Design_P2.md)
 - TicTacToe Player 2 Source Code - [tictactoeP2.c](https://github.com/CSE-5462-Spring-2021/assignment3-conner-n-ben/blob/master/tictactoeP2.c)
-
 ## TicTacToe Player 1
 > By: Conner Graham
 
 ### DESCRIPTION <a name="description-p1"></a>
-This lab contains a program called "tictactoeP1" which TODO.
-The specific tasks the client performs are as follows:
-- TODO
+This lab contains a program called "tictactoeP1" which sets up
+the first player (server) of a simple net-enabled TicTacToe game.
+This server sets up a connection endpoint for other players to
+connect to sequentially connects to any waiting players,
+initializes a game of TicTacToe when a player connects, and then
+starts playing the game sending moves to the other player and
+waiting for the other players moves in response until a winner is
+found or the game is a draw. The specific tasks the server
+performs are as follows:
+- Create and bind server socket from user provided port
+- Print server info and listen for connections
+- Accept TCP STREAM connection from waiting client
+- Initialize new game of TicTacToe
+- Play game of TicTacToe with connected client
+- Terminate the connection to the client once game ends
 
 If the number of arguments is incorrect remote port is
 invalid, the program prints appropriate messages and
@@ -44,7 +55,11 @@ If any of the argument strings contain whitespace, those
 arguments will need to be enclosed in quotes.
 
 ### ASSUMPTIONS <a name="assumptions-p1"></a>
-TODO
+- It is assumed that no more than 5 players will be trying to play
+  at a given time.
+- It is assumed that the Player 1 (server) will terminate the server
+  when they are done playing, in which case clients will need to
+  find another serevr to connect to if they sich to play.
 
 ## TicTacToe Player 2
 > By: Ben Nagel
