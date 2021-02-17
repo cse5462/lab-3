@@ -98,14 +98,4 @@ int main(int argc, char *argv[]) {
             printf("Player 2 picked: %d\n", choice);
         }
 ```
-Closes the connection if the server gives a bad number 
-```
-printf("Invalid move\n");
-            if (player == 1)
-            {
-                printf("The spot picked is not empty\n");
-                printf("Closing the game & connection\n");
-                exit(1);
-            }
-            
-```
+
