@@ -26,7 +26,21 @@ before the connection is established, the program terminates and prints appropri
 messages, otherwise an error message is printed and the connection is terminated.
 ```C
 int main(int argc, char *argv[]) {
-    TODO
+    /* check that the arg count is correct */
+    if (!correct) exit(EXIT_FAILURE);
+    extract_args(params...);
+    create_endpoint(params...);
+    /* listen for  */
+    if (listening) {
+        /* infinite loop wiating for a player to connect */
+        if (connected) {
+            init_shared_state(params...);   // initialize game board
+            tictactoe(params...);   // start TicTacToe game
+        }
+        /* terminate connection to client */
+    } else {
+        exit(EXIT_FAILURE);
+    }
     return 0;
 }
 ```
@@ -61,18 +75,43 @@ TODO Note: This function was created by Dr. Ogle (not myself), but I made signif
 structure so I have included it in my design.
 ```C
 void tictactoe(params...) {
-    TODO
+    /* initialize whose turn it is */
+    while (game not over) {
+        print_board(params...);
+        get_player_choice(params...);   // get move from Player 1 or 2
+        if (error_code) return;
+        /* get correct mark for player move */
+        /* determine where to move and update game board */
+        check_win(params...);
+        if (no winner) {
+            /* change to other player's turn */
+        }
+    }
+    print_board(params...); // print final state of game
+    /* determine who won, if anyone */
 }
 ```
-- TODO
-    ```C
-    int get_player_choice(params...) {
-        TODO
-    }
-    ```
-- TODO
+- Determines whether or not the given move is valid based on the current state of the game.
     ```C
     int validate_choice(params...) {
-        TODO
+        if (move not numer [1-9]) return FALSE;
+        if (move has already been made) return FALSE;
+        return TRUE;
     }
     ```
+- Returns the validated player intput received from either Player 1 or 2. If the input from the host
+  player in invalid, it reprompts until a valid move is made. If the input from the remote player is
+  invalid, an error code is returned instead.
+    ```C
+    int get_player_choice(params...) {
+        /* get choice from Player 1 or 2 */
+        while (move invalid) {
+            /* reprompt for valid move */
+            if (Player 2) return error_code;
+        }
+        if (Player 1) {
+            /* send move to Player 2 */
+        }
+    }
+    ```
+    
