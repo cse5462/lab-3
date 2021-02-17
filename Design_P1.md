@@ -36,8 +36,8 @@ int main(int argc, char *argv[]) {
         if (connected) {
             init_shared_state(params...);   // initialize game board
             tictactoe(params...);   // start TicTacToe game
+            /* terminate connection to client */
         }
-        /* terminate connection to client */
     } else {
         exit(EXIT_FAILURE);
     }
